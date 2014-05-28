@@ -31,7 +31,6 @@ func (r *MapReader) Read() (maprecord map[string]string, err error) {
 	for k, v := range r.mapping {
 		maprecord[k] = record[v]
 	}
-
 	return maprecord, nil
 }
 
@@ -74,7 +73,7 @@ func (w *MapWriter) WriteAll(maprecords []map[string]string) (err error) {
         }
     }
     w.Writer.Flush()
-    return nil
+	return nil
 }
 
 func NewMapReader(r io.Reader) (*MapReader, error) {
@@ -88,17 +87,14 @@ func NewMapReader(r io.Reader) (*MapReader, error) {
 	for i := range header {
 		mapping[header[i]] = i
 	}
-
 	return &MapReader{header, mapping, reader}, nil
 }
 
 func NewMapWriter(w io.Writer, fields []string) (*MapWriter, error) {
 	writer := csv.NewWriter(w)
 	mapping := make(map[string]int)
-
 	for i := range fields {
 		mapping[fields[i]] = i
 	}
-
 	return &MapWriter{fields, mapping, writer}, nil
 }
