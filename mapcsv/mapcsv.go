@@ -84,7 +84,7 @@ func NewMapReader(r io.Reader) (*MapReader, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, field := range header {
+	for i, field := range header {
 		mapping[field] = i
 	}
 	return &MapReader{header, mapping, reader}, nil
