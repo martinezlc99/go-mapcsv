@@ -66,13 +66,13 @@ func (w *MapWriter) Write(maprecord map[string]string) (err error) {
 }
 
 func (w *MapWriter) WriteAll(maprecords []map[string]string) (err error) {
-    for _, maprecord := range maprecords {
-        err = w.Write(maprecord)
-        if err != nil {
-           return err
-        }
-    }
-    w.Writer.Flush()
+	for _, maprecord := range maprecords {
+		err = w.Write(maprecord)
+		if err != nil {
+			return err
+		}
+	}
+	w.Writer.Flush()
 	return nil
 }
 
@@ -84,8 +84,8 @@ func NewMapReader(r io.Reader) (*MapReader, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i := range header {
-		mapping[header[i]] = i
+	for _, field := range header {
+		mapping[field] = i
 	}
 	return &MapReader{header, mapping, reader}, nil
 }
