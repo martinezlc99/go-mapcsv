@@ -93,8 +93,8 @@ func NewMapReader(r io.Reader) (*MapReader, error) {
 func NewMapWriter(w io.Writer, fields []string) (*MapWriter, error) {
 	writer := csv.NewWriter(w)
 	mapping := make(map[string]int)
-	for i := range fields {
-		mapping[fields[i]] = i
+	for i, field := range fields {
+		mapping[field] = i
 	}
 	return &MapWriter{fields, mapping, writer}, nil
 }
