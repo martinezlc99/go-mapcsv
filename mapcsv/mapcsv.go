@@ -7,8 +7,9 @@ import (
 )
 
 type MapReader struct {
-	fields  []string       //fieldnames for csv file
+	fields  []string //fieldnames for csv file
 	mapping map[string]int //map of fieldnames to column number
+	record  map[string]string //record of most current data
 	*csv.Reader
 }
 
@@ -27,11 +28,10 @@ func (r *MapReader) Read() (maprecord map[string]string, err error) {
 	if err != nil {
 		return nil, err
 	}
-	maprecord = make(map[string]string)
 	for k, v := range r.mapping {
-		maprecord[k] = record[v]
+		r.record[k] = record[v]
 	}
-	return maprecord, nil
+	return r.record, nil
 }
 
 func (r *MapReader) ReadAll() (maprecords []map[string]string, err error) {
@@ -44,7 +44,12 @@ func (r *MapReader) ReadAll() (maprecords []map[string]string, err error) {
 		if err != nil {
 			return nil, err
 		}
-		maprecords = append(maprecords, maprecord)
+		//Need to create a copy instead of reference of the record to store
+		newmaprecord := make(map[string]string)
+		for k, v := range maprecord {
+			newmaprecord[k] = v
+		}
+		maprecords = append(maprecords, newmaprecord)
 	}
 }
 
@@ -79,6 +84,7 @@ func (w *MapWriter) WriteAll(maprecords []map[string]string) (err error) {
 func NewMapReader(r io.Reader) (*MapReader, error) {
 	reader := csv.NewReader(r)
 	mapping := make(map[string]int)
+	record := make(map[string]string)
 	//read first row to get header information
 	header, err := reader.Read()
 	if err != nil {
@@ -87,7 +93,7 @@ func NewMapReader(r io.Reader) (*MapReader, error) {
 	for i, field := range header {
 		mapping[field] = i
 	}
-	return &MapReader{header, mapping, reader}, nil
+	return &MapReader{header, mapping, record, reader}, nil
 }
 
 func NewMapWriter(w io.Writer, fields []string) (*MapWriter, error) {
